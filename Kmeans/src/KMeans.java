@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 public class KMeans {
 
 public static ArrayList<Centroide> centroides = new ArrayList<Centroide>();
@@ -9,81 +10,84 @@ public static ArrayList<Media> mediacus = new ArrayList<Media>();
     public static int NumCentroides =3;
 
     public static void SeleccionCentroide() {
+        int dimension = datos.get(0).getFutures().length;
         for (int i = 0; i < NumCentroides; i++) {
-            // Generar valores aleatorios en los rangos especificados para x e y
-            double x = -20 + Math.random() * (100 - (-20));
-            double y = -40 + Math.random() * (100 - (-40));
-    
-            // Crear y añadir el nuevo centroide
-            Centroide centroide = new Centroide(x, y);
-            centroides.add(centroide);
-    
-            System.out.println("Centroide " + i + ": X=" + x + " Y=" + y);
+            double[] randomCoordinates = new double[dimension];
+            for (int j = 0; j < dimension; j++) {
+                randomCoordinates[j] = -20 + Math.random() * (100 - (-20));
+            }
+            centroides.add(new Centroide(randomCoordinates));
         }
     }
 
-    public static void CalcularDistanciaEuclidiana(){
+    public static void CalcularDistanciaEuclidiana() {
         clusterdatas.clear(); // Limpiar la lista antes de llenarla nuevamente
         for (DataSet data : datos) {
-
+    
             double distanciaMinima = Double.MAX_VALUE;
             int indiceCentroideMasCercano = -1;
-
+    
             for (int i = 0; i < centroides.size(); i++) {
                 Centroide centroide = centroides.get(i);
-                double suma = Math.sqrt(Math.pow(data.getx() - centroide.getx(), 2) + Math.pow(data.gety() - centroide.gety(), 2));
-                //System.out.println("Dato: "+ datos.indexOf(data)+" Centroide: "+ i+" "+ data.getx()+ " "+ data.gety()+" suma: "+ suma);
-                if (suma < distanciaMinima) {
-                    distanciaMinima = suma;
+                double suma = 0;
+    
+                // Calcular la distancia euclidiana
+                for (int j = 0; j < data.futures.length; j++) {
+                    suma += Math.pow(data.futures[j] - centroide.futures[j], 2);
+                }
+                double distancia = Math.sqrt(suma);
+    
+                if (distancia < distanciaMinima) {
+                    distanciaMinima = distancia;
                     indiceCentroideMasCercano = i;
                 }
             }
             // Guarda el dato agrupado en la nueva lista
-            clusterdatas.add(new ClusteredData(data.getx(), data.gety(), indiceCentroideMasCercano));
+            clusterdatas.add(new ClusteredData(data.futures, indiceCentroideMasCercano));
         }
-
     }
+    
 
     public static void ImprimirCentroides(){
         for (Centroide centroide : centroides) {
             System.out.println("Centroide: ");
-            System.out.println("X: " + centroide.getx() + " Y: " + centroide.gety());
+            System.out.println(centroide.getFutures());
         }
 
     }
 
-    public static void imprimirAgrupados(){
+    public static void imprimirAgrupados() {
         for (ClusteredData data : clusterdatas) {
-            System.out.println("X: " + data.getx() + " Y: " + data.gety() + " Centroide: " + data.getCentroide());
-        }
+            System.out.println(Arrays.toString(data.getFutures()) + " Centroide: " + data.getCentroide());
     }
+}
 
     public static void MediaCentroides() {
         mediacus.clear(); // Limpiar las medias previas si existen
     
         for (int j = 0; j < NumCentroides; j++) {
-            double sumax = 0;
-            double sumay = 0;
+            double[] sumaFutures = new double[datos.get(j).getFutures().length];
             int contador = 0;
     
             for (ClusteredData data : clusterdatas) {
                 if (data.getCentroide() == j) { // Si el dato pertenece al centroide actual
-                    sumax += data.getx();
-                    sumay += data.gety();
+                    for (int k=0; k < data.getFutures().length; k++) {
+                        sumaFutures[k] += data.getFutures()[k];
+                    }
                     contador++;
                 }
             }
     
             // Solo calcular la media si hay datos asignados al centroide
             if (contador > 0) {
-                double mediax = sumax / contador;
-                double mediay = sumay / contador;
-                
-                centroides.get(j).x = mediax;
-                centroides.get(j).y = mediay;
-    
-                // Agregar la media a la lista de medias
-                mediacus.add(new Media(j,mediax, mediay, contador)); 
+                double[] mediaFutures = new double[sumaFutures.length];
+                for (int k = 0; k < sumaFutures.length; k++) {
+                    mediaFutures[k] = sumaFutures[k] / contador; // Calcular la media de cada característica
+                }
+                centroides.get(j).futures = mediaFutures;
+
+                // Agregar la media a la lista de medias (dependiendo de cómo la uses, tal vez necesites ajustar esto)
+                mediacus.add(new Media(j, mediaFutures, contador)); 
             }
         }
     }
@@ -97,26 +101,40 @@ public static ArrayList<Media> mediacus = new ArrayList<Media>();
     
             for (int i = 0; i < mediacus.size(); i++) {
                 Media media = mediacus.get(i); // Utilizar `Media` en lugar de `Centroide`
+                double suma = 0;
     
-                double suma = Math.sqrt(Math.pow(data.getx() - media.getMediax(), 2) + Math.pow(data.gety() - media.getMediay(), 2));
+                // Calcular la distancia euclidiana en múltiples dimensiones
+                for (int j = 0; j < data.futures.length; j++) {
+                    suma += Math.pow(data.futures[j] - media.medias[j], 2);
+                }
+                double distancia = Math.sqrt(suma);
     
-                if (suma < distanciaMinima) {
-                    distanciaMinima = suma;
+                if (distancia < distanciaMinima) {
+                    distanciaMinima = distancia;
                     indiceCentroideMasCercano = i;
                 }
             }
     
             // Guarda el dato agrupado en la nueva lista
-            clusterdatas.add(new ClusteredData(data.getx(), data.gety(), indiceCentroideMasCercano));
+            clusterdatas.add(new ClusteredData(data.futures, indiceCentroideMasCercano));
         }
     }
     
 
-    public static void ImprimirMedias(){
+    public static void ImprimirMedias() {
         for (Media media : mediacus) {
-            System.out.println("media de centroide " + mediacus.indexOf(media)+" X: " + media.getMediax() + " Y: " + media.getMediay()+" Numero de datos: "+ media.getContador());
+            System.out.print("Media de centroide " + mediacus.indexOf(media) + ": [");
+            
+            // Imprimir todas las medias de las características
+            for (int i = 0; i < media.medias.length; i++) {
+                System.out.print(media.medias[i]);
+                if (i < media.medias.length - 1) {
+                    System.out.print(", ");
+                }
+            }
+            
+            System.out.println("] Número de datos: " + media.getContador());
         }
-
     }
     
 }
