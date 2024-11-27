@@ -1,29 +1,21 @@
 public class Media {
-    public int clousterlnum;
-    public double mediax;
-    public double mediay;
+    public int centroide;
+    public double[] medias;
     public int contador;
 
-    public Media(int clousterlnum, double mediax, double mediay, int contador) {
-        this.clousterlnum = clousterlnum;
-        this.mediax = mediax;
-        this.mediay = mediay;
+    public Media(int centroide, double[] medias, int contador) {
+        this.centroide = centroide;
+        this.medias = medias;
         this.contador = contador;
     }
-
-    public int getClousterlnum() {
-        return clousterlnum;
+    
+    public int getCentroide(){
+        return centroide;
     }
-
-  public double getMediax() {
-        return mediax;
+    public double[] getMedias() {
+        return medias;
     }
-
-    public double getMediay() {
-        return mediay;
-    }
-    public int getContador() {
+    public int getContador(){
         return contador;
     }
-    
 }
