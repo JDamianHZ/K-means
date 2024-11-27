@@ -4,25 +4,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class DataSet {
-    static String csvFile ="D:\\semetres\\7mo\\IA\\Kmeans\\xclara.csv";
-    public double x;
-    public double y;
+    static String csvFile ="D:\\semetres\\7mo\\IA\\Kmeans1\\xclara2.csv";
+    public String id;
+    public double[] futures;
     
    public static ArrayList<DataSet> datos = new ArrayList<DataSet>();
 
 
-    public  DataSet(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public  DataSet(String id, double[] futures){ {
+        this.id = id;
+        this.futures = futures;
+    }
     }
 
-    public double getx(){
-        return x;
+    public String getId() {
+        return id;
+    }
+    public double[] getFutures() {
+        return futures;
     }
 
-    public double gety(){
-        return y;
-    }
 
 
     public static void LeerDatos(){
@@ -32,8 +33,13 @@ public class DataSet {
            br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] valores = line.split(cvsSplitBy);
-                DataSet data = new DataSet(Double.parseDouble(valores[0]), Double.parseDouble(valores[1]));
-                datos.add(data);
+                String id = valores[0];
+
+                double[] futures = new double[valores.length-1];
+                for (int i = 1; i < valores.length; i++) {
+                    futures[i-1] = Double.parseDouble(valores[i]);
+                }
+                datos.add(new DataSet(id, futures));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,11 +49,18 @@ public class DataSet {
 
     public static void imprimirDatos(){
         for (DataSet data : datos) {
-            System.out.println("X: " + data.getx() + " Y: " + data.gety());
+            double[] futures = data.getFutures();
+            if (futures.length >= 2) {
+                System.out.println(data.getId()+" ");
+                for (double future: data.getFutures()) {
+                    System.out.print(future+" ");
+                }
+            } else {
+                System.out.println("ID: " + data.getId() + " tiene datos incompletos.");
+            }
         }
     }
-
-
+    
 
 
 
