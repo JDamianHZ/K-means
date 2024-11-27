@@ -1,17 +1,16 @@
 public class Centroide {
     double x;
     double y;
-    public Centroide(double x, double y) {
-        this.x = x;
-        this.y = y;
+
+    double[] futures;
+
+    public Centroide(double[] futures) {
+        this.futures = futures;
     }
 
-    public double getx(){
-        return x;
+public double[] getFutures() {
+        return futures;
     }
 
-    public double gety(){
-        return y;
-    }
     
 }
