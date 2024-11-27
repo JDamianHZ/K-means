@@ -1,24 +1,19 @@
 public class ClusteredData {
-    public double x;
-    public double y;
+    public double[] futures;
     public int centroide;
 
    
 
-    public ClusteredData(double x, double y, int centroide) {
-        this.x = x;
-        this.y = y;
+    public ClusteredData(double[] futures ,int centroide) {
+       this.futures = futures;
         this.centroide = centroide;
     }
 
-    public double getx(){
-        return x;
-    }
-    public double gety(){
-        return y;
-    }
     public int getCentroide(){
         return centroide;
+    }
+    public double[] getFutures() {
+        return futures;
     }
     
 
